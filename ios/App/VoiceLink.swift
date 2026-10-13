@@ -63,6 +63,30 @@ final class VoiceLink {
     private var lastLookup = Date.distantPast
     private(set) var status: Status = .offline
 
+    private let pathMonitor = NWPathMonitor()
+    private var lastPath = ""
+
+    init() {
+        pathMonitor.pathUpdateHandler = { [weak self] path in self?.pathChanged(path) }
+        pathMonitor.start(queue: q)
+    }
+
+    /// Wi-Fi <-> mobile data: reconnect at once so the direct Wi-Fi path wins at home and the tunnel takes over
+    /// when you leave, instead of waiting for the old link to time out. Never during a dictation.
+    private func pathChanged(_ path: NWPath) {
+        let key = path.availableInterfaces.map { $0.name }.joined(separator: ",")
+        defer { lastPath = key }
+        guard !lastPath.isEmpty, key != lastPath, path.status == .satisfied, wanted, dict == nil else { return }
+        live?.cancel()
+        attempts.forEach { $0.cancel() }
+        live = nil
+        attempts = []
+        pingTimer?.cancel()
+        pingTimer = nil
+        retryDelay = 1
+        connectLocked()
+    }
+
     func configure(_ p: Pairing?) {
         q.async {
             guard p != self.pairing else { return }
