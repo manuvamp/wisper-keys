@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">wisper keys</string>
+    <color name="icon_bg">#FF16161A</color>
+    <style name="AppTheme" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#FF101013</item>
+        <item name="android:colorBackground">#FF101013</item>
+        <item name="android:colorAccent">#FF5B7CFA</item>
+        <item name="android:colorPrimary">#FF101013</item>
+        <item name="android:statusBarColor">#FF101013</item>
+        <item name="android:navigationBarColor">#FF101013</item>
+    </style>
+</resources>

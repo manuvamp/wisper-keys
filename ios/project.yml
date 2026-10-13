@@ -1,0 +1,73 @@
+# XcodeGen spec: `brew install xcodegen && xcodegen` (on a Mac or in CI) makes WisperKeys.xcodeproj.
+# Before a device build: set DEVELOPMENT_TEAM to your Apple team ID. If the bundle IDs are taken, change
+# BUNDLE_ID below and the App Group in both entitlements and in Shared/Shared.swift (Shared.appGroup).
+name: WisperKeys
+options:
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    BUNDLE_ID: app.wisperkeys
+    TARGETED_DEVICE_FAMILY: "1"
+targets:
+  WisperKeys:
+    type: application
+    platform: iOS
+    sources: [App, Shared]
+    dependencies:
+      - target: WisperKeyboard
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID)
+        PRODUCT_NAME: wisper keys
+        PRODUCT_MODULE_NAME: WisperKeys
+    entitlements:
+      path: App/WisperKeys.entitlements
+      properties:
+        com.apple.security.application-groups: [group.app.wisperkeys]
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: wisper keys
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIBackgroundModes: [audio]
+        NSMicrophoneUsageDescription: wisper keys listens while you hold the keyboard's mic key and sends it to your PC to type it.
+        NSLocalNetworkUsageDescription: wisper keys connects to wisper on your PC to turn your voice into text, and finds the PC again on your Wi-Fi if its address changes.
+        NSBonjourServices: [_wisper._tcp]
+        CFBundleURLTypes:
+          - CFBundleURLName: app.wisperkeys
+            CFBundleURLSchemes: [wisperkeys]
+        ITSAppUsesNonExemptEncryption: false
+  WisperKeyboard:
+    type: app-extension
+    platform: iOS
+    sources: [Keyboard, Shared]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID).keyboard
+        PRODUCT_NAME: WisperKeyboard
+    entitlements:
+      path: Keyboard/WisperKeyboard.entitlements
+      properties:
+        com.apple.security.application-groups: [group.app.wisperkeys]
+    info:
+      path: Keyboard/Info.plist
+      properties:
+        CFBundleDisplayName: wisper keys
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.keyboard-service
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).KeyboardViewController
+          NSExtensionAttributes:
+            IsASCIICapable: true
+            PrefersRightToLeft: false
+            PrimaryLanguage: en-US
+            RequestsOpenAccess: true

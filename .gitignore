@@ -1,0 +1,10 @@
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/build.log
+ios/*.xcodeproj
+ios/App/Info.plist
+ios/Keyboard/Info.plist
+docs/shots/*_crop.png
+__pycache__/
