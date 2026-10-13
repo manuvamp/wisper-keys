@@ -34,7 +34,7 @@ trip (the emulator showed 2-7 ms). A 48 s dictation came back 13 ms after lettin
    PC restarts, its addresses change: the phone finds it again by itself (mDNS on Wi-Fi, a secret GitHub gist
    holding the tunnel's current address everywhere else). Measured through the tunnel: ~55 ms release -> text.
 
-**Android**
+**Android** (download: https://github.com/manuvamp/wisper-keys/releases/latest/download/wisper-keys.apk)
 1. `python -I D:\wisper\tools\pair.py --apk "D:\hackathn fire tv\wisper-keys\android\app\build\outputs\apk\release\app-release.apk"`
 eleasepp-release.apk"`
    shows two QR codes: scan the first with the phone camera to download and install the app (15 minutes).
@@ -70,4 +70,8 @@ Android (portable toolchain in `%USERPROFILE%\dev`: JDK 17, Android SDK 35, Grad
 - Rediscovery: tested on the emulator paired with only dead addresses: it found the PC through the gist.
 - Android: built and tested on an Android 15 emulator: setup, pairing link, typing, long-press, symbols, emoji,
   swipe-delete, Enter actions, mic -> PC -> reply. Not yet on a physical phone (the emulator mic only hears silence).
-- iOS: written, **not compiled yet** (needs a Mac or the GitHub workflow). Expect a round of small compile fixes.
+- iOS: **compiles** (GitHub Actions, macOS runner, repo `manuvamp/wisper-keys`). App IDs `app.wisperkeys` and
+  `app.wisperkeys.keyboard` are registered on team 9SM6R448K8 and the API key is in the repo secrets. TestFlight
+  still needs, once, while signed in to Apple: the App Group `group.app.wisperkeys` (assigned to both IDs) and the
+  App Store Connect app record "wisper keys" (bundle `app.wisperkeys`, SKU `wisperkeys`). Then run the `ios`
+  workflow with "testflight" ticked.
