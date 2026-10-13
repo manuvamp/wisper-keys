@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.inputmethodservice.InputMethodService
 import android.media.AudioManager
+import android.net.ConnectivityManager
+import android.net.Network
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -65,10 +67,27 @@ class WisperIME : InputMethodService(), KeyboardView.Listener, VoiceClient.Liste
     private val hideUndo = Runnable { lastInsert = null; if (::strip.isInitialized) strip.setUndo(false) }
     private val idleStrip = Runnable { refreshStrip() }
 
+    /** Wi-Fi <-> mobile data: reconnect right away on the best path (the first callback is the current network). */
+    private val netWatch = object : ConnectivityManager.NetworkCallback() {
+        private var current: Network? = null
+        override fun onAvailable(network: Network) {
+            val changed = current != null && current != network
+            current = network
+            if (changed) ui.post { voice.networkChanged() }
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         prefs = Prefs(this)
         vibrator = getSystemService(Vibrator::class.java)
+        try { getSystemService(ConnectivityManager::class.java).registerDefaultNetworkCallback(netWatch) } catch (_: Exception) {}
+    }
+
+    override fun onDestroy() {
+        try { getSystemService(ConnectivityManager::class.java).unregisterNetworkCallback(netWatch) } catch (_: Exception) {}
+        voice.close()
+        super.onDestroy()
     }
 
     override fun onCreateInputView(): View {

@@ -104,6 +104,24 @@ class VoiceClient(
         }
     }
 
+    /**
+     * The phone switched networks (Wi-Fi <-> mobile data). Reconnect at once instead of waiting for the old link to
+     * time out, so the direct Wi-Fi path wins at home and the tunnel takes over as soon as you leave. Never during a
+     * dictation (that one finishes, or is replayed, on its own).
+     */
+    fun networkChanged() {
+        synchronized(lock) {
+            if (dict != null || !wanted) return
+            live?.cancel()
+            attempts.forEach { it.cancel() }
+            live = null
+            attempts.clear()
+            main.removeCallbacks(pinger)
+            retryMs = 1000
+            connectLocked()
+        }
+    }
+
     /** Close now (the setup screen's connection test). */
     fun close() {
         synchronized(lock) {

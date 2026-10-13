@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- usesCleartextTraffic: the PC is reached as ws:// on your Wi-Fi or over Tailscale (which encrypts it) -->
     <application
